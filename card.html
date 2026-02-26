@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Romantic Card</title>
+
+    <style>
+        /* ===== PAGE SETUP ===== */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* No scrollbars */
+            background-color: lightpink;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Container that holds everything */
+        #scene {
+            position: relative;
+            width: 400px;
+            height: 400px;
+        }
+
+        /* Common styling for all images */
+        .item {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.8s ease, opacity 0.8s ease;
+            cursor: pointer;
+        }
+
+        /* Letter starts small */
+        #letter {
+            width: 120px;
+        }
+
+        /* Emoji larger than letter */
+        #emoji {
+            width: 200px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Scroll size */
+        #scroll {
+            width: 220px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Open scroll larger */
+        #scroll.open {
+            width: 300px;
+        }
+
+        /* Rose */
+        #rose {
+            width: 220px;
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="scene">
+    <!-- Letter -->
+    <img id="letter" class="item" src="letter_closed.png" alt="Letter">
+
+    <!-- Emoji -->
+    <img id="emoji" class="item" src="emoji.png" alt="Emoji">
+
+    <!-- Scroll -->
+    <img id="scroll" class="item" src="scroll_closed.png" alt="Scroll">
+
+    <!-- Rose -->
+    <img id="rose" class="item" src="rose.png" alt="Rose">
+</div>
+
+<!-- Click sound -->
+<audio id="clickSound" src="click.mp3"></audio>
+
+<script>
+/* =========================================================
+   STATE MANAGEMENT
+   ========================================================= */
+
+/*
+State meanings:
+0 = initial (letter only)
+1 = emoji visible outside letter
+2 = emoji gone (back to letter)
+3 = scroll visible (closed)
+4 = scroll open
+5 = scroll gone (back to letter)
+6 = rose visible (final)
+*/
+let interactionState = 0;
+
+/* =========================================================
+   ELEMENT REFERENCES
+   ========================================================= */
+const letter = document.getElementById("letter");
+const emoji = document.getElementById("emoji");
+const scroll = document.getElementById("scroll");
+const rose = document.getElementById("rose");
+const clickSound = document.getElementById("clickSound");
+
+/* =========================================================
+   SOUND HANDLING (NO OVERLAP)
+   ========================================================= */
+function playClickSound() {
+    clickSound.pause();
+    clickSound.currentTime = 0;
+    clickSound.play();
+}
+
+/* =========================================================
+   LETTER CLICK LOGIC
+   ========================================================= */
+letter.addEventListener("click", () => {
+    playClickSound();
+
+    /* CLICK 1 – Emoji Appears */
+    if (interactionState === 0) {
+        letter.src = "letter_open.png";
+
+        emoji.style.opacity = 1;
+        emoji.style.pointerEvents = "none";
+        emoji.style.transform =
+            "translate(-50%, -70%) scale(1)";
+
+        interactionState = 1;
+
+        setTimeout(() => {
+            letter.src = "letter_closed.png";
+        }, 500);
+    }
+
+    /* CLICK 2 – Emoji Goes Back */
+    else if (interactionState === 1) {
+        emoji.style.transform =
+            "translate(-50%, -50%) scale(0)";
+        emoji.style.opacity = 0;
+
+        interactionState = 2;
+    }
+
+    /* CLICK 3 – Scroll Appears */
+    else if (interactionState === 2) {
+        scroll.src = "scroll_closed.png";
+        scroll.classList.remove("open");
+
+        scroll.style.opacity = 1;
+        scroll.style.pointerEvents = "auto";
+        scroll.style.transform =
+            "translate(-50%, -70%) scale(1)";
+
+        interactionState = 3;
+    }
+
+    /* CLICK 6 – Letter Transforms into Rose */
+    else if (interactionState === 5) {
+        /* Letter animation */
+        letter.style.transform =
+            "translate(-50%, -50%) scale(0.05) rotate(720deg)";
+        letter.style.opacity = 0;
+        letter.style.pointerEvents = "none";
+
+        /* Rose animation */
+        rose.style.opacity = 1;
+        rose.style.pointerEvents = "auto";
+        rose.style.transform =
+            "translate(-50%, -50%) scale(1) rotate(-720deg)";
+
+        interactionState = 6;
+    }
+});
+
+/* =========================================================
+   SCROLL CLICK LOGIC
+   ========================================================= */
+scroll.addEventListener("click", () => {
+    playClickSound();
+
+    /* CLICK 4 – Scroll Opens */
+    if (interactionState === 3) {
+        scroll.src = "scroll_open.png";
+        scroll.classList.add("open");
+
+        interactionState = 4;
+    }
+
+    /* CLICK 5 – Scroll Goes Back */
+    else if (interactionState === 4) {
+        scroll.style.transform =
+            "translate(-50%, -50%) scale(0)";
+        scroll.style.opacity = 0;
+        scroll.style.pointerEvents = "none";
+
+        interactionState = 5;
+    }
+});
+
+/* =========================================================
+   FINAL ROSE CLICK (LINK)
+   ========================================================= */
+rose.addEventListener("click", () => {
+    playClickSound();
+    window.open("https://example.com", "_blank"); // Replace later
+});
+
+/* =========================================================
+   INITIAL TRANSFORMS (HIDDEN STATES)
+   ========================================================= */
+emoji.style.transform = "translate(-50%, -50%) scale(0)";
+scroll.style.transform = "translate(-50%, -50%) scale(0)";
+rose.style.transform = "translate(-50%, -50%) scale(0)";
+</script>
+
+</body>
+</html>
