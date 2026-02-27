@@ -5,9 +5,6 @@
 <title>Interactive Romantic Card</title>
 
 <style>
-/* ======================================================
-   PAGE SETUP
-   ====================================================== */
 html, body {
     width: 100%;
     height: 100%;
@@ -16,14 +13,12 @@ html, body {
     background-color: lightpink;
 }
 
-/* Scene container */
 #scene {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-/* Shared styling for all visual elements */
 .item {
     position: absolute;
     left: 50%;
@@ -34,18 +29,13 @@ html, body {
     cursor: pointer;
 }
 
-/* ======================================================
-   POSITIONING
-   ====================================================== */
-
-/* Letter near bottom */
 #letter {
     bottom: 80px;
     transform: translateX(-50%) scale(1);
     width: 110px; /* smallest element */
 }
 
-/* Emoji */
+
 #emoji {
     bottom: 80px;
     width: 220px;
@@ -53,7 +43,6 @@ html, body {
     pointer-events: none;
 }
 
-/* Scroll */
 #scroll {
     bottom: 80px;
     width: 260px; /* closed scroll */
@@ -62,10 +51,10 @@ html, body {
 }
 
 #scroll.open {
-    width: 340px; /* open scroll is largest */
+    width: 340px; 
 }
 
-/* Rose */
+
 #rose {
     bottom: 80px;
     width: 260px;
@@ -89,51 +78,28 @@ html, body {
 <audio id="clickSound" src="click.mp3"></audio>
 
 <script>
-/* ======================================================
-   STATE DEFINITIONS
-   ======================================================
-   0 = initial (letter only)
-   1 = emoji visible
-   2 = emoji returned
-   3 = closed scroll visible
-   4 = open scroll visible
-   5 = scroll returned
-   6 = rose visible (final)
-====================================================== */
+
 let interactionState = 0;
 
-/* ======================================================
-   ELEMENT REFERENCES
-   ====================================================== */
 const letter = document.getElementById("letter");
 const emoji = document.getElementById("emoji");
 const scroll = document.getElementById("scroll");
 const rose = document.getElementById("rose");
 const clickSound = document.getElementById("clickSound");
 
-/* ======================================================
-   SOUND HANDLING (NO OVERLAP)
-   ====================================================== */
 function playClickSound() {
     clickSound.pause();
     clickSound.currentTime = 0;
     clickSound.play();
 }
 
-/* ======================================================
-   INITIAL HIDDEN STATES
-   ====================================================== */
 emoji.style.transform = "translate(-50%, 0) scale(0)";
 scroll.style.transform = "translate(-50%, 0) scale(0)";
 rose.style.transform  = "translate(-50%, 0) scale(0)";
 
-/* ======================================================
-   LETTER CLICK LOGIC
-   ====================================================== */
 letter.addEventListener("click", () => {
     playClickSound();
 
-    /* CLICK 1 — Emoji emerges */
     if (interactionState === 0) {
         letter.src = "letter_open.png";
 
@@ -148,7 +114,6 @@ letter.addEventListener("click", () => {
         interactionState = 1;
     }
 
-    /* CLICK 2 — Emoji returns */
     else if (interactionState === 1) {
         emoji.style.transform =
             "translate(-50%, 0) scale(0)";
@@ -157,7 +122,6 @@ letter.addEventListener("click", () => {
         interactionState = 2;
     }
 
-    /* CLICK 3 — Closed scroll emerges */
     else if (interactionState === 2) {
         scroll.src = "scroll_closed.png";
         scroll.classList.remove("open");
@@ -170,7 +134,6 @@ letter.addEventListener("click", () => {
         interactionState = 3;
     }
 
-    /* CLICK 6 — Letter transforms into rose */
     else if (interactionState === 5) {
         letter.style.transform =
             "translateX(-50%) scale(0.05) rotate(720deg)";
@@ -186,13 +149,9 @@ letter.addEventListener("click", () => {
     }
 });
 
-/* ======================================================
-   SCROLL CLICK LOGIC
-   ====================================================== */
 scroll.addEventListener("click", () => {
     playClickSound();
 
-    /* CLICK 4 — Scroll opens */
     if (interactionState === 3) {
         scroll.src = "scroll_open.png";
         scroll.classList.add("open");
@@ -200,7 +159,6 @@ scroll.addEventListener("click", () => {
         interactionState = 4;
     }
 
-    /* CLICK 5 — Scroll returns */
     else if (interactionState === 4) {
         scroll.style.transform =
             "translate(-50%, 0) scale(0)";
@@ -211,9 +169,6 @@ scroll.addEventListener("click", () => {
     }
 });
 
-/* ======================================================
-   FINAL ROSE CLICK
-   ====================================================== */
 rose.addEventListener("click", () => {
     playClickSound();
     window.open("https://music.youtube.com/watch?v=cpyKmRKW0f0&si=mjfe62L73kKaACd9", "_blank");
